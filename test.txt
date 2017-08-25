@@ -1,0 +1,16 @@
+// Don't edit this file!  It's software-generated.
+
+#define PALETTE1  0
+#define PALETTE4  1
+#define PALETTE8  2
+#define TRUECOLOR 3
+
+#define NUM_LEDS 18
+
+// test4.gif ------------------------------------------------------------
+const uint8_t PROGMEM palette00[][3] = {
+	{   0,   0,   0, },
+	{ 255, 255, 255, },
+	{  54,  41, 178, },
+	{ 141, 204, 186, },
+	{ 210, 188,  63, }}
