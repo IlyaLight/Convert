@@ -21,8 +21,8 @@ public class Convert {
     private static String bodi;
     private static String foot;
 
-     /** добавить масив с адресами картинок*/
-    public static void convert (File[] arrayFilesIn, File fileOut, int pixelNumber)
+     /**convert*/
+    public static void convertGIF (File[] arrayFilesIn, File fileOut, int pixelNumber)
             throws UnableToEncodeException,  NullPointerException,  IOException {
         if (arrayFilesIn == null) {
             throw new NullPointerException("Input files is null");
@@ -39,7 +39,7 @@ public class Convert {
         out.print(head);
         out.print("#define NUM_LEDS " + pixelNumber + "\n\n");
 
-        int filenuber = 0;
+        int fileCount = 0;
         for (File fileIn :arrayFilesIn) {
             // read bytes from input file
             byte[] bytes = new byte[(int)fileIn.length()];
@@ -66,7 +66,7 @@ public class Convert {
 
                 if (palette <= 24){
                     out.print("// " + fileIn.getName() + " ------------------------------------------------------------\n");
-                    out.print("const uint8_t PROGMEM palette0" + filenuber + "[][3] = {");
+                    out.print("const uint8_t PROGMEM palette0" + fileCount + "[][3] = {");
                     for (int i = 0; i < palette;) {
                         out.print("\n\t{");
                         out.format(" %3d,", bytes[13 + i + 0] & 0b11111111);
@@ -74,15 +74,16 @@ public class Convert {
                         out.format(" %3d,", bytes[13 + i + 2] & 0b11111111);
                         out.print(" }");
                         i += 3;
-                        if (bytes[13 + i + 0] == 0 && bytes[13 + i + 1] == 0 && bytes[13 + i + 2] == 0) {
+                        if (bytes[13 + i + 0] == 0 && bytes[13 + i + 1] == 0 && bytes[13 + i + 2] == 0) {   //пропускаем пустые места в палитре
                             break;
                         }
                         if (i != palette) out.print(",");
                     }
                     out.print(" };\n");
-
-
+                    out.print("const uint8_t PROGMEM pixels0" + fileCount + "[] = {");
+                    
                 }
+
 
             }
             /*если выста картинки не совподает с количеством пикселей вызываем исключение*/
@@ -117,6 +118,29 @@ public class Convert {
 //        }
         out.close();
     }
+
+    public static void convert (File[] arrayFilesIn, File fileOut, int pixelNumber)
+         throws UnableToEncodeException,  NullPointerException,  IOException {
+            if (arrayFilesIn == null) {
+                throw new NullPointerException("Input files is null");
+            }
+            if (fileOut == null) {
+                throw new NullPointerException("Output file is null");
+            }
+            if (pixelNumber == 0) {
+                throw new UnableToEncodeException("pixelNumber must be > 0");
+            }
+
+            PrintWriter out = new PrintWriter(fileOut);
+            out.print(head);
+            out.print("#define NUM_LEDS " + pixelNumber + "\n\n");
+        int fileCount = 0;
+        for (File fileIn :arrayFilesIn) {
+            BufferedImage image = ImageIO.read(fileIn);
+        }
+
+    }
+
 
 
 }
