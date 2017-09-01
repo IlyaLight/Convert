@@ -2,12 +2,16 @@ package com.bibam;
 
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedHashSet;
+import java.util.Set;
 
 //**FastRGB
 // используется для быстрого доступа к пикселям изображения BufferedImage,
 // при создании объекта класса все пиксели из image копируются байтовый массив pixels
-// и дальнейшая работа происходит через обращения к этому массиву*/
+// и дальнейшая работа происходит через обращения к этому массиву
+// не работает с gif форматом!*/
 public class FastRGB
 {
 
@@ -17,25 +21,19 @@ public class FastRGB
     private int pixelLength;
     private byte[] pixels;
 
-    FastRGB(BufferedImage image)
-    {
-
-        pixels = ((DataBufferByte) image.getRaster().getDataBuffer()).getData();
+    FastRGB(BufferedImage image){
+        pixels = ((DataBufferByte) image.getRaster().getDataBuffer()).getData();    //не работает с gif форматом!
         width = image.getWidth();
         height = image.getHeight();
         hasAlphaChannel = image.getAlphaRaster() != null;
         pixelLength = 3;
-        if (hasAlphaChannel)
-        {
+        if (hasAlphaChannel){
             pixelLength = 4;
         }
-
     }
 
-    int getRGB(int x, int y)
-    {
+    int getRGBint(int x, int y) {
         int pos = (y * pixelLength * width) + (x * pixelLength);
-
         int argb = -16777216; // 255 alpha
         if (hasAlphaChannel)
         {
@@ -45,6 +43,19 @@ public class FastRGB
         argb += ((int) pixels[pos++] & 0xff); // blue
         argb += (((int) pixels[pos++] & 0xff) << 8); // green
         argb += (((int) pixels[pos++] & 0xff) << 16); // red
+        return argb;
+    }
+
+
+    byte [] getRGBbyt(int x, int y){
+        int pos = (y * pixelLength * width) + (x * pixelLength);
+        byte[] argb = new byte[pixelLength];
+        if (hasAlphaChannel) {
+            argb[3] = pixels[pos++]; // alpha
+        }
+        argb[2] = pixels[pos++]; // blue
+        argb[1] = pixels[pos++]; // green
+        argb[0] = pixels[pos++]; // red
         return argb;
     }
 
@@ -67,13 +78,53 @@ public class FastRGB
         return argb;
     }
 
+//    int[][] getRGBarray{}{
+//
+//}
 
-    //возвращает экземпляр LinkedHashSet с палитрой
-    LinkedHashSet getRGBpalette(){
-        LinkedHashSet palette = new LinkedHashSet();
-        for (int pixel : pixels) {
-
-        }
+    //возвращает экземпляр ArrayList с палитрой
+    ArrayList getRGBpaletteInt(){
+        ArrayList<Integer> palette = new ArrayList<>();
+            for (int x = 0; x < width; x++) {
+                for (int y = 0; y < height; y++) {
+                    int p = getRGBint(x, y);
+                    if (!palette.contains(p))
+                        palette.add(p);
+                }
+            }
         return palette;
     }
+
+    ArrayList getRGBpaletteByt(){
+        ArrayList<Byte[]> palette = new ArrayList <>();
+         for (int y = 0; y < height; y++) {
+             for (int x = 0; x < width; x++) {
+                byte[] buf = getRGBbyt(x, y);
+                Byte[] p = new Byte[pixelLength];
+                if (hasAlphaChannel) {
+                    p[3] = buf[3];
+                    p[2] = buf[2];
+                    p[1] = buf[1];
+                    p[0] = buf[0];}
+
+                else {
+                    p[2] = buf[2];
+                    p[1] = buf[1];
+                    p[0] = buf[0];
+                }
+                boolean repit = false;
+                for (Byte[] color: palette) {
+                    if  (Arrays.equals(color, p)) {
+                        repit = true;
+                        break;
+                    }
+                }
+                if (!repit)
+                palette.add(p);
+
+        }
+    }
+        return palette;
+}
+
 }

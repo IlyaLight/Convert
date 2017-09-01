@@ -9,6 +9,8 @@ import java.awt.image.ImageObserver;
 import java.awt.image.ImageProducer;
 import java.io.File;
 import java.io.*;
+import java.util.ArrayList;
+import java.util.LinkedHashSet;
 
 public class Convert {
     private static String head = "// Don't edit this file!  It's software-generated.\n" +
@@ -136,8 +138,38 @@ public class Convert {
             out.print("#define NUM_LEDS " + pixelNumber + "\n\n");
         int fileCount = 0;
         for (File fileIn :arrayFilesIn) {
+
             BufferedImage image = ImageIO.read(fileIn);
+            FastRGB fastRGB = new FastRGB(image);
+            ArrayList<Byte[]> palette = fastRGB.getRGBpaletteByt();
+            if (palette.size()<= 16){
+                out.print("// " + fileIn.getName() + " ------------------------------------------------------------\n");
+                out.print("const uint8_t PROGMEM palette0" + fileCount + "[][3] = {");
+                for (int i = 0; i < palette.size(); ) {
+                    byte rgb[] = new byte[]{
+                            palette.get(i)[0],
+                            palette.get(i)[1],
+                            palette.get(i)[2]};
+                    if (rgb[0] == 0 && rgb[1] == 0 && rgb[2] == 0) {
+                        i++;
+                        continue;
+                    }
+                    out.print("\n\t{");
+                    out.format(" %3d,", rgb[0] & 0b11111111);
+                    out.format(" %3d,", rgb[1] & 0b11111111);
+                    out.format(" %3d,", rgb[2] & 0b11111111);
+                    out.print(" }");
+                    if (i != palette.size())
+                        out.print(",");
+                    i++;
+                }
+                out.print(" };\n");
+                out.print("const uint8_t PROGMEM pixels0" + fileCount + "[] = {");
+            }
+
+
         }
+        out.close();
 
     }
 

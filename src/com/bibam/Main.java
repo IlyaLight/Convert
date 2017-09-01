@@ -15,7 +15,7 @@ public class Main {
         //Запись в файл
         //Main.write(fileName, text);
         File [] filesin = new File[1];
-        filesin[0] = new File("test4.gif");
+        filesin[0] = new File("test4.bmp");
         File fileout = new File("test.txt");
 
 
