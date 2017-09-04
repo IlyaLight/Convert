@@ -4,8 +4,7 @@ import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.LinkedHashSet;
-import java.util.Set;
+
 
 //**FastRGB
 // используется для быстрого доступа к пикселям изображения BufferedImage,
@@ -42,14 +41,14 @@ public class FastRGB
 
         argb += ((int) pixels[pos++] & 0xff); // blue
         argb += (((int) pixels[pos++] & 0xff) << 8); // green
-        argb += (((int) pixels[pos++] & 0xff) << 16); // red
+        argb += (((int) pixels[pos] & 0xff) << 16); // red
         return argb;
     }
 
 
-    byte [] getRGBbyt(int x, int y){
+    Byte [] getRGBbyt(int x, int y){
         int pos = (y * pixelLength * width) + (x * pixelLength);
-        byte[] argb = new byte[pixelLength];
+        Byte[] argb = new Byte[pixelLength];
         if (hasAlphaChannel) {
             argb[3] = pixels[pos++]; // alpha
         }
@@ -62,8 +61,7 @@ public class FastRGB
     byte[][] getRGBarray(){
         byte[][] argb = new byte[width*height][pixelLength];
         for (int i = 0; i < pixels.length;) {
-            if (hasAlphaChannel)
-            {
+            if (hasAlphaChannel){
                 argb[i][3] = pixels[i];     // alpha
                 argb[i][2] = pixels[i+1];   // blue
                 argb[i][1] = pixels[i+2];   // green
@@ -99,28 +97,27 @@ public class FastRGB
         ArrayList<Byte[]> palette = new ArrayList <>();
          for (int y = 0; y < height; y++) {
              for (int x = 0; x < width; x++) {
-                byte[] buf = getRGBbyt(x, y);
-                Byte[] p = new Byte[pixelLength];
-                if (hasAlphaChannel) {
+                 Byte[] buf = getRGBbyt(x, y);
+                 Byte[] p = new Byte[pixelLength];
+                 if (hasAlphaChannel) {
                     p[3] = buf[3];
                     p[2] = buf[2];
                     p[1] = buf[1];
                     p[0] = buf[0];}
-
-                else {
+                 else {
                     p[2] = buf[2];
                     p[1] = buf[1];
                     p[0] = buf[0];
-                }
-                boolean repit = false;
-                for (Byte[] color: palette) {
+                 }
+                 boolean repit = false;
+                 for (Byte[] color: palette) {
                     if  (Arrays.equals(color, p)) {
                         repit = true;
                         break;
                     }
-                }
-                if (!repit)
-                palette.add(p);
+                 }
+                 if (!repit)
+                 palette.add(p);
 
         }
     }

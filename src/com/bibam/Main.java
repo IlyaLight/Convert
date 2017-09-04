@@ -14,8 +14,9 @@ public class Main {
 	// write your code here
         //Запись в файл
         //Main.write(fileName, text);
-        File [] filesin = new File[1];
+        File [] filesin = new File[2];
         filesin[0] = new File("test4.bmp");
+        filesin[1] = new File("Копия (1) test41.png");
         File fileout = new File("test.txt");
 
 
